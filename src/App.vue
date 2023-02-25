@@ -1,34 +1,40 @@
 <template>
   <div id="app">
+    <div>
+      <input
+          @input="onChange"
+          v-model="value"
+          type="number"
+      >
+      <select v-model="selected">
+        <option disabled value="">Выберите один из вариантов</option>
+        <option
+            v-for="(ticker, key) in tickers"
+            :key="key"
+            v-bind:value="ticker.name"
+        > {{ ticker.name }}
+        </option>
+      </select>
+<!--      <span>Выбрано: {{ selected }}</span>-->
 
-    <input
-        @input="onChange"
-        v-model="value"
-        type="number"
-    >
-    <select v-model="selected">
-      <option disabled value="">Выберите один из вариантов</option>
-      <option>USD</option>
-      <option>ETH</option>
-      <option>BTC</option>
-      <option>UAH</option>
-    </select>
-    <span>Выбрано: {{ selected }}</span>
-
-    <input
-        @input="onChange"
-        type="number"
-        :value="result"
-    >
-
-    <select v-model="selected2">
-      <option disabled value="">Выберите один из вариантов</option>
-      <option>ETH</option>
-      <option>BTC</option>
-      <option>USD</option>
-      <option>UAH</option>
-    </select>
-    <span>Выбрано: {{ selected2 }}</span>
+    </div>
+    <div>
+      <input
+          @input="onChange"
+          type="number"
+          :value="result"
+      >
+      <select v-model="selected2">
+        <option disabled value="">Выберите один из вариантов</option>
+        <option
+            v-for="(ticker, key) in tickers"
+            :key="key"
+            v-bind:value="ticker.name"
+        > {{ ticker.name }}
+        </option>
+      </select>
+<!--      <span>Выбрано: {{ selected2 }}</span>-->
+    </div>
 
 
     <div>
@@ -51,9 +57,19 @@ export default {
 
   data() {
     return {
-      value: null,
+      value: 1,
       selected: 'USD',
       selected2: 'BTC',
+      tickers: [
+        {name: 'USD'},
+        {name: 'EUR'},
+        {name: 'UAH'},
+        {name: 'GBP'},
+        {name: 'BTC'},
+        {name: 'ETH'},
+        {name: 'BNB'},
+        {name: 'XRP'},
+      ],
       result: null,
       ETH: null,
       BTC: null,
