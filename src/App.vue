@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="main">
-    <div class="title">
-      <h1>Currency conversion</h1>
+    <div class="header">
+      <div class="title">Currency Exchange</div>
     </div>
 
     <div class="container">
@@ -52,47 +52,30 @@
           </div>
           <div class="field-input__result">
             {{ value }} {{ selected }} = {{ result }} {{ selected2 }}
+
+<!--            <div>ETH {{ ETH }}</div>-->
+<!--            <div>BTC {{ BTC }}</div>-->
+<!--            <div>USD {{ USD }}</div>-->
           </div>
         </div>
       </div>
     </div>
 
-
-
-
-    <div>ETH {{ ETH }}</div>
-    <div>BTC {{ BTC }}</div>
-    <div>USD {{ USD }}</div>
-
-
-    <button @click="openModal">Search currency</button>
-
-    <div v-if="modalOpened" class="modal">
-      <div class="modal__wrapper">
-        Search currency
-        <div class="modal__wrapper--type">
-          <input
-              v-model="tickersNew"
-              v-on:keydown.enter="add"
-              type="text"
-          >
-          <button v-on:click="add">add</button>
-          <button @click="modalOpened = false" v-on:keydown.esc="modalOpened = false">Close</button>
-        </div>
-      </div>
-    </div>
-
-    {{ currency }}
+    <CurrencyTable/>
 
   </div>
 </template>
 
 <script>
 
+import CurrencyTable from "@/components/CurrencyTable.vue";
+
 export default {
   name: 'App',
 
-  components: {},
+  components: {
+    CurrencyTable,
+  },
 
   data() {
     return {
@@ -115,9 +98,6 @@ export default {
       ETH: null,
       BTC: null,
       USD: null,
-      modalOpened: false,
-      tickersNew: null,
-      currency: null,
     }
   },
 
@@ -152,14 +132,6 @@ export default {
       return (await loadTicker()) * +this.value
     },
 
-    openModal() {
-      this.modalOpened = true;
-      console.log(this.modalOpened)
-    },
-
-    add() {
-      this.currency.push(this.tickersNew)
-    },
 
   }
 
@@ -170,57 +142,82 @@ export default {
 @import "./assets/style.scss";
 
 
-
 %myInputSelect {
   padding: 10px;
   margin: 2px;
   width: 100px;
   border-radius: 10px;
-  border: 0;
+  border: solid 0.5px darkgray;
+  background: white;
+}
+
+body {
+  margin: 0;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+
 }
 
 .main {
-  max-width: 300px;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin: 60px auto;
-  font-size: 15px;
+  //background: linear-gradient(180deg, #c7f6da, white);
 
-  .title {
-    text-transform: uppercase;
-    font-size: 10px;
+
+  .header {
+    max-width: 300px;
+    margin: 50px auto 0;
+
+
+
+    .title {
+      text-transform: uppercase;
+      font-size: 20px;
+      padding: 12px 0;
+      background: dodgerblue;
+      border-radius: 15px 15px 0 0;
+      width: 300px;
+      height: 20px;
+      text-align: center;
+      color: white;
+
+    }
+
+
   }
 
   .field-input {
-    background: orange;
+    max-width: 300px;
+    margin: 0 auto 30px;
     border: 0;
-    border-radius: 20px;
-    height: 150px;
+    border-radius: 0 0 15px 15px;
     min-width: 300px;
     display: table;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0px 0px 25px 3px rgba(214,214,214,0.51);
 
     &__wrapper {
       display: table-cell;
       text-align: center;
       vertical-align: middle;
-      //margin: 0 auto;
     }
 
-    &__first, &__second {
+    &__first {
       display: flex;
       justify-content: center;
       align-items: center;
+      padding-top: 20px;
+    }
+
+    &__second {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 20px;
+    }
 
       input, select {
         @extend %myInputSelect;
       }
-    }
+
     &__result {
-      margin-top: 10px;
+      margin-bottom: 20px;
       font-weight: bold;
     }
   }
