@@ -43,7 +43,9 @@
 
 
           <button @click="openModal" class="button-search">Search currency</button>
-
+          <div>
+            <button @click="getValue" class="button-search">update value</button>
+          </div>
           <div v-if="modalOpened" class="modal">
             <div class="modal__wrapper">
               <div class="title">Search currency</div>
@@ -234,7 +236,7 @@ export default {
     border: none;
     cursor: pointer;
     border-radius: 10px;
-    margin: 10px auto 30px;
+    margin: 0 auto 30px;
     text-transform: uppercase;
 
     &:hover {
