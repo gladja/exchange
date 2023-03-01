@@ -19,39 +19,50 @@
           </div>
 
           <div class="currency-table__block2">
-            <div class="currency-table__block2--item">
-              <div>ETH</div>
-              <div>{{ ETH }}</div>
+<!--            <div class="currency-table__block2&#45;&#45;item">-->
+<!--              <div>ETH</div>-->
+<!--              <div>{{ ETH }}</div>-->
+<!--            </div>-->
+<!--            <div class="currency-table__block2&#45;&#45;item">-->
+<!--              <div>BTC</div>-->
+<!--              <div>{{ BTC }}</div>-->
+<!--            </div>-->
+<!--            <div class="currency-table__block2&#45;&#45;item">-->
+<!--              <div>USD</div>-->
+<!--              <div>{{ USD }}</div>-->
+<!--            </div>-->
+<!--            <div class="currency-table__block2&#45;&#45;item">-->
+<!--              <div>EUR</div>-->
+<!--              <div>{{ EUR }}</div>-->
+<!--            </div>-->
+<!--            <div class="currency-table__block2&#45;&#45;item">-->
+<!--              <div>UAH</div>-->
+<!--              <div>{{ UAH }}</div>-->
+<!--            </div>-->
+            <div
+                class="currency-table__block2--item"
+                v-for="(coin, i) in coins"
+                :key="i"
+
+            >
+              <div>{{ i }}</div>
+              <div>{{ coin }}</div>
+              <button @click="remove(i)">-</button>
             </div>
-            <div class="currency-table__block2--item">
-              <div>BTC</div>
-              <div>{{ BTC }}</div>
-            </div>
-            <div class="currency-table__block2--item">
-              <div>USD</div>
-              <div>{{ USD }}</div>
-            </div>
-            <div class="currency-table__block2--item">
-              <div>EUR</div>
-              <div>{{ EUR }}</div>
-            </div>
-            <div class="currency-table__block2--item">
-              <div>UAH</div>
-              <div>{{ UAH }}</div>
-            </div>
+
           </div>
 
 
           <button @click="openModal" class="button-search">Search currency</button>
           <div>
-            <button @click="getValue" class="button-search">update value</button>
+            <button @click="onChange" class="button-search">update value</button>
           </div>
           <div v-if="modalOpened" class="modal">
             <div class="modal__wrapper">
               <div class="title">Search currency</div>
               <div class="modal__wrapper--type">
                 <input
-                    v-model="tickersNew"
+                    v-model.trim="tickersNew"
                     v-on:keydown.enter="add"
                     type="text"
                 >
@@ -66,9 +77,6 @@
               </div>
             </div>
           </div>
-          <!--        <button>Добавить</button>-->
-          <!--          {{ currency }}-->
-
         </div>
       </div>
     </div>
@@ -96,41 +104,56 @@ export default {
           name: 'UAH'
         },
       ],
-      ETH: 0,
-      BTC: 0,
-      USD: 0,
-      UAH: 0,
-      EUR: 0,
+      // USD: 1,
+      // EUR: 0,
+      // UAH: 0,
+      // BTC: 0,
+      // ETH: 0,
       result: null,
       value: 1,
       modalOpened: false,
       tickersNew: null,
-      currency: null,
+      coins: {USD: 0, EUR: 0, UAH: 0, BTC: 0, ETH: 0},
+      // newCoin: {symbol: 'USDT', name: ''},
+      arrays: [],
     }
   },
   created() {
     this.init();
+    this.getCoins();
   },
   methods: {
+
     init() {
-      setInterval(this.onChange, 3000);
+      setInterval(this.onChange, 5000);
+      // setInterval(this.getNewCoin, 3000);
     },
 
+    // async onChange() {
+    //   const [result, ETH, BTC, USD, EUR, UAH] = await Promise.all([
+    //     this.getValue(),
+    //     this.getValue('ETH'),
+    //     this.getValue('BTC'),
+    //     this.getValue('USD'),
+    //     this.getValue('EUR'),
+    //     this.getValue('UAH'),
+    //   ])
+    //   this.result = result;
+    //   this.ETH = ETH;
+    //   this.BTC = BTC;
+    //   this.USD = USD;
+    //   this.EUR = EUR;
+    //   this.UAH = UAH;
+    // },
+
     async onChange() {
-      const [result, ETH, BTC, USD, EUR, UAH] = await Promise.all([
-        this.getValue(),
-        this.getValue('ETH'),
-        this.getValue('BTC'),
-        this.getValue('USD'),
-        this.getValue('EUR'),
-        this.getValue('UAH'),
-      ])
-      this.result = result;
-      this.ETH = ETH;
-      this.BTC = BTC;
-      this.USD = USD;
-      this.EUR = EUR;
-      this.UAH = UAH;
+      const coins = Object.keys(this.coins)
+      const result = await Promise.all(coins.map(str => this.getValue(str === 'result' ? undefined : str)))
+      console.log("result", result)
+      console.log("coins", coins)
+      coins.forEach((str, idx) => {
+        this.$set(this.$data.coins, str, result[idx])
+      })
     },
 
     async getValue(selectedTo = this.selected2) {
@@ -142,13 +165,40 @@ export default {
       return (await loadTicker())
     },
 
+    // async getNewCoin(selectedTo = 'USDT') {
+    //   const loadTicker = () =>
+    //       fetch(
+    //           `https://api.coingecko.com/api/v3/search?query=${selectedTo}`
+    //       ).then(r => r.json()).then(data => {
+    //         console.log(data)});
+    //   return (await loadTicker())
+    // },
+
     openModal() {
       this.modalOpened = true;
-      console.log(this.modalOpened)
     },
 
     add() {
-      this.currency.push(this.tickersNew)
+      this.modalOpened = !this.modalOpened;
+      this.addCoin(this.tickersNew);
+      this.saveCoins();
+    },
+
+    remove(i) {
+      delete this.coins[i];
+      this.saveCoins();
+    },
+
+    addCoin() {
+      this.coins[this.tickersNew.toUpperCase()] = 0;
+      // this.saveCoins();
+    },
+
+    saveCoins() {
+      localStorage.setItem('coins', JSON.stringify(this.coins))
+    },
+    getCoins() {
+      this.coins = JSON.parse(localStorage.getItem('coins'))
     },
   }
 }

@@ -107,7 +107,7 @@ export default {
 
   methods: {
     init() {
-      setInterval(this.onChange, 19000);
+      setInterval(this.onChange, 5000);
     },
 
     async onChange() {
