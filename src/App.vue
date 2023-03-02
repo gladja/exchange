@@ -14,6 +14,7 @@
                   @input="onChange"
                   v-model="value"
                   type="number"
+                  min="0"
               >
             </div>
             <div>
@@ -52,10 +53,9 @@
           </div>
           <div class="field-input__result">
             {{ value }} {{ selected }} = {{ result }} {{ selected2 }}
-
-<!--            <div>ETH {{ ETH }}</div>-->
-<!--            <div>BTC {{ BTC }}</div>-->
-<!--            <div>USD {{ USD }}</div>-->
+          </div>
+          <div class="errorMessage" v-if="error" >
+            {{errorMessage}}
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default {
     return {
       value: 1,
       min: 1,
-      max: 10000,
+      maxAmount: 10000,
       selected: 'USD',
       selected2: 'BTC',
       tickers: [
@@ -95,9 +95,9 @@ export default {
         {name: 'XRP'},
       ],
       result: null,
-      ETH: null,
-      BTC: null,
-      USD: null,
+      error: false,
+      errorMessage: '',
+
     }
   },
 
@@ -107,20 +107,15 @@ export default {
 
   methods: {
     init() {
-      setInterval(this.onChange, 5000);
+      setInterval(this.onChange, 1000);
     },
 
     async onChange() {
-      const [result, ETH, BTC, USD] = await Promise.all([
+      const [result, ] = await Promise.all([
         this.getValue(),
-        this.getValue('ETH'),
-        this.getValue('BTC'),
-        this.getValue('USD'),
       ])
-      this.result = result;
-      this.ETH = ETH;
-      this.BTC = BTC;
-      this.USD = USD;
+      this.result = result.toFixed(4);
+      this.convert();
     },
 
     async getValue(selectedTo = this.selected2) {
@@ -132,6 +127,19 @@ export default {
       return (await loadTicker()) * +this.value
     },
 
+    convert() {
+      this.error = false;
+      if (this.value > this.maxAmount) {
+        this.error = true;
+        this.errorMessage = 'The maximum amount of the desired currency can be no more than 10,000';
+        this.result = 0;
+      }
+      if((this.value < 0 )) {
+        this.error = true;
+        this.errorMessage = 'Negative value entered'
+        this.result = 0;
+      }
+    },
 
   }
 
@@ -139,7 +147,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./assets/style.scss";
 
 
 %myInputSelect {
@@ -250,6 +257,11 @@ body {
         }
       }
     }
+  }
+
+  .errorMessage {
+    margin-bottom: 20px;
+    color: red;
   }
 }
 </style>

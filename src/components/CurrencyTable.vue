@@ -104,13 +104,6 @@ export default {
           name: 'UAH'
         },
       ],
-      // USD: 1,
-      // EUR: 0,
-      // UAH: 0,
-      // BTC: 0,
-      // ETH: 0,
-      result: null,
-      value: 1,
       modalOpened: false,
       tickersNew: null,
       coins: {USD: 0, EUR: 0, UAH: 0, BTC: 0, ETH: 0},
@@ -122,29 +115,12 @@ export default {
     this.init();
     this.getCoins();
   },
+
   methods: {
 
     init() {
       setInterval(this.onChange, 5000);
-      // setInterval(this.getNewCoin, 3000);
     },
-
-    // async onChange() {
-    //   const [result, ETH, BTC, USD, EUR, UAH] = await Promise.all([
-    //     this.getValue(),
-    //     this.getValue('ETH'),
-    //     this.getValue('BTC'),
-    //     this.getValue('USD'),
-    //     this.getValue('EUR'),
-    //     this.getValue('UAH'),
-    //   ])
-    //   this.result = result;
-    //   this.ETH = ETH;
-    //   this.BTC = BTC;
-    //   this.USD = USD;
-    //   this.EUR = EUR;
-    //   this.UAH = UAH;
-    // },
 
     async onChange() {
       const coins = Object.keys(this.coins)
@@ -164,15 +140,6 @@ export default {
           ).then(r => r.json()).then(r => r[selectedTo]);
       return (await loadTicker())
     },
-
-    // async getNewCoin(selectedTo = 'USDT') {
-    //   const loadTicker = () =>
-    //       fetch(
-    //           `https://api.coingecko.com/api/v3/search?query=${selectedTo}`
-    //       ).then(r => r.json()).then(data => {
-    //         console.log(data)});
-    //   return (await loadTicker())
-    // },
 
     openModal() {
       this.modalOpened = true;
